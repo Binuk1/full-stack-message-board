@@ -6,8 +6,10 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware - CORS configured for your Vercel frontend
 app.use(cors({
-  origin: 'https://full-stack-message-board-flax.vercel.app',
-  credentials: true
+  origin: ['https://full-stack-message-board-flax.vercel.app', 'https://full-stack-message-board-production.up.railway.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
 }));
 
 app.use(express.json());
@@ -59,6 +61,4 @@ app.delete('/api/messages/:id', (req, res) => {
   res.json({ message: 'Message deleted successfully' });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+module.exports = app;
