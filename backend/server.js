@@ -4,11 +4,12 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// Middleware - CORS configured for your Vercel frontend
 app.use(cors({
   origin: 'https://full-stack-message-board-flax.vercel.app',
   credentials: true
 }));
+
 app.use(express.json());
 
 // Sample data
