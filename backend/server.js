@@ -50,7 +50,20 @@ app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Backend server is running!' });
+  res.json({ 
+    message: 'Backend server is running!',
+    mongodbUri: MONGODB_URI ? 'configured' : 'not configured'
+  });
+});
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    await connectDB();
+    res.json({ status: 'healthy', mongodb: 'connected' });
+  } catch (err) {
+    res.status(500).json({ status: 'unhealthy', mongodb: 'disconnected', error: err.message });
+  }
 });
 
 // Get all messages
