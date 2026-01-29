@@ -7,7 +7,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-const API_URL = 'https://full-stack-message-board-production.up.railway.app/api'
+  const API_URL = 'https://full-stack-message-board-production.up.railway.app/api'
+
   // Fetch messages on component mount
   useEffect(() => {
     fetchMessages()
