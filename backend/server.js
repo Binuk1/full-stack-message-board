@@ -6,8 +6,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware - CORS configured for your Vercel frontend
 app.use(cors({
-  origin: ['https://full-stack-message-board-flax.vercel.app', 'https://full-stack-message-board-production.up.railway.app'],
-  credentials: true,
+  origin: '*',
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type']
 }));
