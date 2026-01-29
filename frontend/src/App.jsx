@@ -7,7 +7,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const API_URL = 'https://full-stack-message-board-flax.vercel.app/'
+  const API_URL = 'https://full-stack-message-board-production.up.railway.app/'
   // Fetch messages on component mount
   useEffect(() => {
     fetchMessages()
@@ -17,7 +17,7 @@ function App() {
     try {
       setLoading(true)
       console.log('📥 Fetching messages...')
-      const response = await fetch(`${API_URL}/messages`)
+      const response = await fetch(`${API_URL}api/messages`)
       
       if (!response.ok) {
         throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
@@ -42,7 +42,7 @@ function App() {
     try {
       console.log('📤 Sending message:', newMessage)
       
-      const response = await fetch(`${API_URL}/messages`, {
+      const response = await fetch(`${API_URL}api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: newMessage })
@@ -70,7 +70,7 @@ function App() {
       console.log(`🗑️ Deleting message with ID: ${id}`)
       console.log('Current messages:', messages)
       
-      const response = await fetch(`${API_URL}/messages/${id}`, {
+      const response = await fetch(`${API_URL}api/messages/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       })
