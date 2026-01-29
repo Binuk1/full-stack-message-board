@@ -1,17 +1,29 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/messageboard';
 
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+let isConnected = false;
+
+const connectDB = async () => {
+  if (isConnected) return;
+  
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    isConnected = true;
+    console.log('✅ Connected to MongoDB');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err);
+    throw err;
+  }
+};
 
 // Message Schema and Model
 const messageSchema = new mongoose.Schema({
@@ -27,7 +39,7 @@ const messageSchema = new mongoose.Schema({
 
 const Message = mongoose.model('Message', messageSchema);
 
-// Middleware - CORS configured
+// Middleware
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
@@ -44,16 +56,19 @@ app.get('/', (req, res) => {
 // Get all messages
 app.get('/api/messages', async (req, res) => {
   try {
+    await connectDB();
     const messages = await Message.find().sort({ timestamp: -1 });
     res.json(messages);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch messages' });
+    console.error('Fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch messages', details: err.message });
   }
 });
 
 // Add a new message
 app.post('/api/messages', async (req, res) => {
   try {
+    await connectDB();
     const { text } = req.body;
     
     if (!text) {
@@ -65,13 +80,15 @@ app.post('/api/messages', async (req, res) => {
     
     res.status(201).json(newMessage);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to add message' });
+    console.error('Add message error:', err);
+    res.status(500).json({ error: 'Failed to add message', details: err.message });
   }
 });
 
 // Delete a message
 app.delete('/api/messages/:id', async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
     
     const message = await Message.findByIdAndDelete(id);
@@ -82,11 +99,17 @@ app.delete('/api/messages/:id', async (req, res) => {
     
     res.json({ message: 'Message deleted successfully' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete message' });
+    console.error('Delete error:', err);
+    res.status(500).json({ error: 'Failed to delete message', details: err.message });
   }
 });
 
-// Start the server
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
