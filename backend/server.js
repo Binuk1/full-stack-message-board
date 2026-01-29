@@ -2,10 +2,13 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://full-stack-message-board-flax.vercel.app',
+  credentials: true
+}));
 app.use(express.json());
 
 // Sample data
@@ -56,5 +59,5 @@ app.delete('/api/messages/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
